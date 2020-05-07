@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="spb">Санкт-Петербург</string>
+    <string name="moscow">Москва</string>
+    <string name="paris">Париж</string>
+    <string name="berlin">Берлин</string>
+    <string name="london">Лондон</string>
+    <string name="wing_speed_title">Скорость ветра</string>
+    <string name="pressure_title">Давление</string>
+    <string name="city_placeholder">Город...</string>
+    <string name="display_settings">Настройки отображения</string>
+    <string name="application_settings">Настройки приложения</string>
+    <string name="theme_setting_title">Тема:</string>
+    <string name="light_theme_title">Светлая</string>
+    <string name="dark_theme_title">Темная</string>
+    <string name="units_settings_title">Единицы измерения:</string>
+    <string name="metric_units_title">Метрические(°C)</string>
+    <string name="imperial_units_title">Имперские(°F)</string>
+    <string name="wind_speed">6 м/с</string>
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="about_city">О ГОРОДЕ</string>
+    <string name="tomorrow">Завтра</string>
+    <string name="today">Сегодня</string>
+    <string name="show_weather">Посмотреть погоду</string>
+    <string name="city_name">Город</string>
+    <string name="go">СМОТРЕТЬ</string>
+    <string name="settings">Настройки</string>
+    <string name="about">О приложении</string>
+    <string name="search">Поиск</string>
+    <string name="feedback_form">Обратная связь</string>
+    <string name="share">Поделиться</string>
+    <string name="select_city">Выберите город</string>
+    <string name="communication">Связь</string>
+    <string name="clear">Очистить</string>
+    <string name="sort_asc">Отсортировать ↑</string>
+    <string name="sort_desc" translatable="false">Отсортировать ↓</string>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="cities">
+        <item>Saint-Petersburg</item>
+        <item>Moscow</item>
+        <item>Paris</item>
+        <item>Berlin</item>
+        <item>London</item>
+    </string-array>
+
+    <integer-array name="weather_picts">
+        <item>@drawable/sunny</item>
+        <item>@drawable/cloudy</item>
+        <item>@drawable/rain</item>
+        <item>@drawable/snow</item>
+        <item>@drawable/storm</item>
+    </integer-array>
+
+    <string-array name="temps">
+        <item>+17</item>
+        <item>-6</item>
+        <item>+10</item>
+        <item>0</item>
+        <item>+4</item>
+        <item>-19</item>
+    </string-array>
+</resources>

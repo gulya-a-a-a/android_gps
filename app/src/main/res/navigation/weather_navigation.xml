@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/weather_navigation"
+    app:startDestination="@id/nav_cities">
+
+    <fragment
+        android:id="@+id/nav_cities"
+        android:name="com.geekbrains.theweatherapp.fragments.FragmentList"
+        android:label="Select city" />
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.geekbrains.theweatherapp.fragments.FragmentSettings"
+        android:label="@string/application_settings" >
+        <action
+            android:id="@+id/action_nav_settings_to_nav_cities"
+            app:destination="@id/nav_cities" />
+    </fragment>
+
+</navigation>

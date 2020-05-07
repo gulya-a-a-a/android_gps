@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="@string/theme_setting_title"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checkedButton="@id/light_theme_cb"
+            android:orientation="vertical"
+            android:paddingStart="5dp"
+            android:paddingEnd="0dp">
+
+            <RadioButton
+                android:id="@+id/light_theme_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/light_theme_title" />
+
+            <RadioButton
+                android:id="@+id/dark_theme_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dark_theme_title" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="@string/units_settings_title"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checkedButton="@id/metric_units_cb"
+            android:orientation="vertical"
+            android:paddingStart="5dp"
+            android:paddingEnd="0dp">
+
+            <RadioButton
+                android:id="@+id/metric_units_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/metric_units_title" />
+
+            <RadioButton
+                android:id="@+id/imperial_units_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/imperial_units_title" />
+        </RadioGroup>
+    </LinearLayout>
+</ScrollView>
