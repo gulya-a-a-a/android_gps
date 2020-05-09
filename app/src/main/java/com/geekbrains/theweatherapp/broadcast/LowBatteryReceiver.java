@@ -28,6 +28,7 @@ public class LowBatteryReceiver extends BroadcastReceiver {
                     .setContentTitle("The Weather App")
                     .setContentText("Battery is running low");
 
+            notificationManager.notify(messageID, builder.build());
         } else {
             notificationManager.cancel(messageID);
         }

@@ -3,12 +3,16 @@ package com.geekbrains.theweatherapp.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -25,11 +29,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.PrimaryKey;
 
 import com.geekbrains.theweatherapp.activities.App;
 import com.geekbrains.theweatherapp.activities.MainActivity;
@@ -60,7 +64,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.geekbrains.theweatherapp.service.Parcel.PARCEL_TAG;
 
 public class FragmentList extends Fragment {
-
+    private final static String LOG_TAG = "Location";
     private static final String API_KEY = "f912bb6609c3957b0ed1ba6ffcc4c5d6";
 
     private static boolean isFirstOpen = true;
@@ -73,8 +77,13 @@ public class FragmentList extends Fragment {
     private RecyclerView mRecyclerView;
     private DecimalFormat mTempFormat;
 
+    private LocationManager mLocationManager = null;
+    private Location mLastLocation = null;
 
-    private LocationManager mLocationManager;
+    private Handler handler = new Handler();
+    private NotificationManager mNotificationManager = null;
+    private static boolean badWeatherNotificationActive = false;
+
 
     @Nullable
     @Override
@@ -102,6 +111,65 @@ public class FragmentList extends Fragment {
             isFirstOpen = false;
             getWeatherByCoordinates();
         }
+
+        initPeriodicWeatherChecking();
+    }
+
+    private void initPeriodicWeatherChecking() {
+        mNotificationManager = (NotificationManager) requireActivity()
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (mLastLocation != null) {
+                    mOpenWeather.loadForecastByCoordinates(
+                            String.valueOf(mLastLocation.getLatitude()),
+                            String.valueOf(mLastLocation.getLongitude()),
+                            API_KEY, "metric").enqueue(new Callback<ForecastResponse>() {
+                        @Override
+                        public void onResponse(Call<ForecastResponse> call, Response<ForecastResponse> response) {
+                            if (response.body() != null) {
+                                ForecastResponse response1 = response.body();
+                                City cityFromResponse = response1.getCity();
+                                cityFromResponse.setWeathers(parseTheForecast(response1));
+                                if (cityFromResponse.getWeathers().get(0).getAdditionalWeatherData().getId() < 800) {
+                                    showBadWeatherNotification();
+                                } else {
+                                    hideBadWeatherNotification();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ForecastResponse> call, Throwable t) {
+                            Log.d("Request Error", "request failure");
+                        }
+                    });
+                }
+                Log.d("PERIOD", "Called");
+                handler.postDelayed(this, 2000);
+            }
+        };
+        handler.post(runnable);
+    }
+
+    private void hideBadWeatherNotification() {
+        if (badWeatherNotificationActive) {
+            mNotificationManager.cancel(1005);
+            badWeatherNotificationActive = false;
+        }
+    }
+
+    private void showBadWeatherNotification() {
+        if (badWeatherNotificationActive) {
+            return;
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireActivity(), "1")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("The Weather App")
+                .setContentText("The weather is too bad for walking!");
+        mNotificationManager.notify(1005, builder.build());
+        badWeatherNotificationActive = true;
     }
 
     @Override
@@ -342,6 +410,9 @@ public class FragmentList extends Fragment {
         }
         try {
             mLocationManager = (LocationManager) mainActivity.getSystemService(Activity.LOCATION_SERVICE);
+            LocListener locListener = new LocListener();
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    3000L, 1.0F, locListener);
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
@@ -352,19 +423,19 @@ public class FragmentList extends Fragment {
         if (mLocationManager == null) {
             return;
         }
-        Location loc = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        if (loc == null)
-            loc = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if (loc == null)
-            loc = mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-        if (loc == null) {
+        if (mLastLocation == null)
+            mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if (mLastLocation == null)
+            mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+        if (mLastLocation == null) {
             return;
         }
 
         mOpenWeather.loadForecastByCoordinates(
-                String.valueOf(loc.getLatitude()),
-                String.valueOf(loc.getLongitude()),
+                String.valueOf(mLastLocation.getLatitude()),
+                String.valueOf(mLastLocation.getLongitude()),
                 API_KEY, "metric").enqueue(new Callback<ForecastResponse>() {
             @Override
             public void onResponse(Call<ForecastResponse> call, Response<ForecastResponse> response) {
@@ -378,5 +449,27 @@ public class FragmentList extends Fragment {
                 Log.d("Request Error", "request failure");
             }
         });
+    }
+
+    private final class LocListener implements LocationListener {
+        @Override
+        public void onLocationChanged(Location location) {
+            mLastLocation = location;
+            Log.d(LOG_TAG, "Location changed");
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.d(LOG_TAG, "GPS enabled");
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.d(LOG_TAG, "GPS disabled");
+        }
     }
 }

@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initNotificationChannel();
     }
 
-
-
     private void initNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager
