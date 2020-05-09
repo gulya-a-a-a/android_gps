@@ -1,8 +1,17 @@
 package com.geekbrains.theweatherapp.activities;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,13 +24,23 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.geekbrains.theweatherapp.R;
+import com.geekbrains.theweatherapp.broadcast.CellularMissedReceiver;
+import com.geekbrains.theweatherapp.broadcast.LowBatteryReceiver;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private AppBarConfiguration mAppBarConfiguration;
     private DrawerLayout mDrawerLayout;
     private NavController mNavController;
+
+    private BroadcastReceiver mLowBatteryReceiver = new LowBatteryReceiver(),
+            mMissedCellularReceiver = new CellularMissedReceiver();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +49,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initViews();
         initDrawer();
+        initBroadcastReceivers();
+        initNotificationChannel();
+    }
+
+    private void initNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager
+                    = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = new NotificationChannel("1",
+                    "WeatherAppNotifications",
+                    NotificationManager.IMPORTANCE_LOW);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+    }
+
+    private void initBroadcastReceivers() {
+        registerReceiver(mLowBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+        registerReceiver(mLowBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_OKAY));
+        registerReceiver(mMissedCellularReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     private void initViews() {

@@ -42,4 +42,5 @@
     <string name="sort_asc">Sort ↑</string>
     <string name="temp_format" translatable="false">+#;-#</string>
     <string name="sort_desc">Sort ↓</string>
+    <string name="msg_token_fmt" ></string>
 </resources>
