@@ -1,6 +1,15 @@
 package com.geekbrains.theweatherapp.activities;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -15,6 +24,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.geekbrains.theweatherapp.R;
+import com.geekbrains.theweatherapp.broadcast.CellularMissedReceiver;
+import com.geekbrains.theweatherapp.broadcast.LowBatteryReceiver;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -23,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private NavController mNavController;
 
+    private BroadcastReceiver mLowBatteryReceiver = new LowBatteryReceiver(),
+            mMissedCellularReceiver = new CellularMissedReceiver();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +44,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initViews();
         initDrawer();
+        initBroadcastReceivers();
+        initNotificationChannel();
+    }
+
+    private void initNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager
+                    = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = new NotificationChannel("1",
+                    "WeatherAppNotifications",
+                    NotificationManager.IMPORTANCE_LOW);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+    }
+
+    private void initBroadcastReceivers() {
+        registerReceiver(mLowBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+        registerReceiver(mLowBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_OKAY));
+        registerReceiver(mMissedCellularReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     private void initViews() {
