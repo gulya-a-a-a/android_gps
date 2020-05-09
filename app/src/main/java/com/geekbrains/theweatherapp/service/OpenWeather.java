@@ -10,10 +10,23 @@ public interface OpenWeather {
     String CITY_ARG = "q";
     String APP_ID_ARG = "appid";
     String UNITS_ARG = "units";
+    String LAT_ARG = "lat";
+    String LON_ARG = "lon";
+
 
     @GET("data/2.5/weather")
-    Call<WeatherRequest> loadWeather(@Query(CITY_ARG) String cityName, @Query(APP_ID_ARG) String keyApi, @Nullable @Query(UNITS_ARG) String units);
+    Call<WeatherRequest> loadWeather(@Query(CITY_ARG) String cityName,
+                                     @Query(APP_ID_ARG) String keyApi,
+                                     @Nullable @Query(UNITS_ARG) String units);
 
     @GET("data/2.5/forecast")
-    Call<ForecastResponse> loadForecast(@Query(CITY_ARG) String cityName, @Query(APP_ID_ARG) String keyApi, @Nullable @Query(UNITS_ARG) String units);
+    Call<ForecastResponse> loadForecast(@Query(CITY_ARG) String cityName,
+                                        @Query(APP_ID_ARG) String keyApi,
+                                        @Nullable @Query(UNITS_ARG) String units);
+
+    @GET("/data/2.5/forecast")
+    Call<ForecastResponse> loadForecastByCoordinates(@Query(LAT_ARG) String lat,
+                                                     @Query(LON_ARG) String lon,
+                                                     @Query(APP_ID_ARG) String keyApi,
+                                                     @Nullable @Query(UNITS_ARG) String units);
 }

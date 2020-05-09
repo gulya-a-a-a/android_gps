@@ -6,12 +6,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,11 +26,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.geekbrains.theweatherapp.R;
 import com.geekbrains.theweatherapp.broadcast.CellularMissedReceiver;
 import com.geekbrains.theweatherapp.broadcast.LowBatteryReceiver;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -40,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private BroadcastReceiver mLowBatteryReceiver = new LowBatteryReceiver(),
             mMissedCellularReceiver = new CellularMissedReceiver();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initBroadcastReceivers();
         initNotificationChannel();
     }
+
+
 
     private void initNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
